@@ -1,58 +1,10 @@
 ;;
 ;; Title: VDC Functions.
-;
-; void __fastcall__ VDC_setVSyncHandler( void (*handler) (void) );
-;			reset with NULL
-; void __fastcall__ VDC_setHSyncHandler( void (*handler) (void) );
-; 			reset with NULL
-; TODO : setXXXHandler(cfunc) with cfunc=NULL mean no_hook	
+  .ifdef CA65
+    .include "ca65/vdc.s"
+  .endif
 
-.ifdef CA65   
-    .include "word.inc"
-	.include "system.inc"
-	.include "irq.inc"
-	.include "vdc.inc"
-	.include "vce.inc"
-
-	.code
-; from mpr.s
-	.import unmap_data
-	.import remap_data
-	.import map_data
-	
-	.export vdc_init	
-	.export _VDC_setVSyncHandler
-	.export _VDC_setHSyncHandler
-
-
-.endif
-
-
-
-_VDC_setVSyncHandler:
-; TODO : update irq_m
-; TODO : check ax=0 (check X only since if X = 0, A is ZP address...no possible)
-	lda     #<(no_hook)
-	ldx     #>(no_hook)
-
-@set:
-	sta     vsync_hook
-	stx     vsync_hook+1
-
-	rts
-	
-_VDC_setHSyncHandler:
-; TODO : update irq_m
-; TODO : check ax=0 (check X only since if X = 0, A is ZP address...no possible)
-	lda     #<(no_hook)
-	ldx     #>(no_hook)
-
-@set:
-	sta     hsync_hook
-	stx     hsync_hook+1
-
-	rts
-
+  .code
 ;;
 ;; function: vdc_set_read
 ;; Set VDC VRAM read pointer.
@@ -201,10 +153,10 @@ vdc_load_data:
     beq    @l2
     cly
 @l0:
-        lda    [<_si], Y
+        lda    [_si], Y
         vdc_data_l
         iny
-        lda    [<_si], Y
+        lda    [_si], Y
         vdc_data_h
         iny
         bne    @l1
@@ -380,30 +332,8 @@ vdc_init:
 reset_hooks:
 	stz		<irq_m
 	
-	lda     #<(no_hook)
-	ldx     #>(no_hook)
-	
-	sta     irq2_hook
-	stx     irq2_hook+1
-
-	sta     irq1_hook
-	stx     irq1_hook+1
-
-	sta     timer_hook
-	stx     timer_hook+1
-
-	sta     nmi_hook
-	stx     nmi_hook+1
-
-	sta     vsync_hook
-	stx     vsync_hook+1
-
-	sta     hsync_hook
-	stx     hsync_hook+1
-
-	sta     reset_hook
-	stx     reset_hook+1
-	
+	stw #no_hook, irq2_hook
+	tai irq2_hook, irq1_hook, 12
 	rts
 	
 no_hook:

@@ -1,6 +1,7 @@
 ;;
 ;; Title: Joypad Functions.
 ;;
+  .include "joypad.inc"
 
   .macro joypad_reset_multitap
     lda    #$01         ; reset multitap to joypad #1
@@ -32,6 +33,7 @@
     sta    \1, X
   .endmacro
 
+  .code
 ;;
 ;; function: joypad_read
 ;; Poll joypads state.

@@ -1,15 +1,11 @@
 ;;
 ;; Title: PSG Functions.
 ;;
+  .ifdef CA65
+    .include "ca65/psg.s"   
+  .endif
 
-	.code
-
-    .include "psg.inc"
-
-.ifdef CA65   
-    .export	psg_init
-.endif
-
+  .code
 ;;
 ;; function: psg_init
 ;; Initialize PSG.
